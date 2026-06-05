@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@theme {
+  --color-deep-purple: #0f0221;
+  --color-surface-dark: #1a0b2e;
+  --color-vibrant-purple: #7e22ce;
+  --color-gold-accent: #facc15;
+  --color-border-purple: #3b0764;
+}
+
+:root {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar to blend in perfectly with Web3 dark purple/gold theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f0221; /* deep-purple */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3b0764; /* border-purple */
+  border-radius: 9999px;
+  border: 2px solid #0f0221; /* inner padding */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #7e22ce; /* vibrant-purple */
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3b0764 #0f0221;
+}
+
+@layer utilities {
+  .ticker-track {
+    animation: ticker-scrolling linear infinite;
+  }
+
+  @keyframes ticker-scrolling {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+    100% {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+}

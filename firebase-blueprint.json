@@ -1,0 +1,48 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Stores user progress and profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "bits": { "type": "number" },
+        "xp": { "type": "number" },
+        "level": { "type": "number" },
+        "archetype": { "type": "string" },
+        "roadmapComplete": { "type": "boolean" },
+        "scanComplete": { "type": "boolean" },
+        "streak": { "type": "number" },
+        "lastVisit": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Mission": {
+      "title": "User Mission",
+      "description": "Tracks status of a specific mission for a user",
+      "type": "object",
+      "properties": {
+        "missionId": { "type": "number" },
+        "status": { "type": "string", "enum": ["locked", "in-progress", "completed", "claimed"] },
+        "progress": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["missionId", "status"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "User profile collection"
+    },
+    "users/{userId}/missions/{missionId}": {
+      "schema": "Mission",
+      "description": "Subcollection for user's mission progress"
+    }
+  }
+}

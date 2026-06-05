@@ -1,0 +1,63 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Phase 3: Primitive Definition
+    function isValidId(id) { 
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); 
+    }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function isVerified() { return isSignedIn() && request.auth.token.email_verified == true; }
+
+    // User Profile Validation
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email']) &&
+             data.uid is string && data.uid.size() <= 128 &&
+             data.email is string && data.email.size() <= 256 &&
+             (data.get('displayName', '') is string && data.get('displayName', '').size() <= 128) &&
+             (data.get('bits', 0) is number) &&
+             (data.get('xp', 0) is number) &&
+             (data.get('level', 1) is number) &&
+             (data.get('archetype', '') is string && data.get('archetype', '').size() <= 64) &&
+             (data.get('streak', 0) is number) &&
+             (data.get('lastVisit', request.time) is timestamp || data.get('lastVisit', '') is string);
+    }
+
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false; // No directory of users
+      
+      allow create: if isOwner(userId) && isVerified() && isValidUser(incoming()) &&
+                      incoming().uid == userId &&
+                      incoming().createdAt == request.time;
+                      
+      allow update: if isOwner(userId) && isVerified() && isValidUser(incoming()) &&
+                      incoming().uid == existing().uid &&
+                      incoming().email == existing().email &&
+                      incoming().updatedAt == request.time;
+                      
+      // Missions Subcollection
+      match /missions/{missionId} {
+        allow get: if isOwner(userId);
+        allow list: if isOwner(userId);
+        
+        allow create: if isOwner(userId) && isVerified() &&
+                        incoming().missionId is number &&
+                        incoming().status in ['locked', 'in-progress', 'completed', 'claimed'] &&
+                        incoming().updatedAt == request.time;
+                        
+        allow update: if isOwner(userId) && isVerified() &&
+                        incoming().missionId == existing().missionId &&
+                        incoming().status in ['locked', 'in-progress', 'completed', 'claimed'] &&
+                        incoming().updatedAt == request.time;
+      }
+    }
+  }
+}

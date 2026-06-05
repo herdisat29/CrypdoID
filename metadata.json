@@ -1,0 +1,10 @@
+{
+  "name": "CrypdoID Assistant",
+  "description": "AI guide for young Indonesians learning about crypto and Web3",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API",
+    "MAJOR_CAPABILITY_FIREBASE_AUTH",
+    "MAJOR_CAPABILITY_FIRESTORE"
+  ]
+}

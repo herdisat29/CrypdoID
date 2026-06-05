@@ -1,0 +1,49 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions for auth check
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    
+    // Checks if userId is a valid wallet address or a simulated sandbox sequence (starts with 0x, lower/upper-case hex)
+    function isWalletId(id) {
+      return id is string && id.matches('(?i)^0x[a-f0-9]{40}$');
+    }
+
+    // Checks if sensitive game-state fields are NOT being modified by the client
+    // These fields must only be changed via server-side Admin SDK
+    function noSensitiveFieldChanges() {
+      return (!request.resource.data.diff(resource.data).affectedKeys()
+              .hasAny(['xp', 'level', 'streak']));
+    }
+
+    match /users/{userId} {
+      // Allow single document reads (get) for user profile and wallet profiles
+      allow get: if isOwner(userId) || isWalletId(userId);
+      allow list: if false; 
+      
+      // Allow creates for authorized owners or simulated sandbox users (initial profile)
+      allow create: if isOwner(userId) || isWalletId(userId);
+      
+      // Allow updates ONLY if sensitive fields (xp, level, streak) are NOT being changed
+      // XP/level/streak mutations must go through server API endpoints
+      allow update: if (isOwner(userId) || isWalletId(userId)) && noSensitiveFieldChanges();
+                        
+      // Missions Subcollection — read only from client, writes go through server
+      match /missions/{missionId} {
+        allow read: if isOwner(userId) || isWalletId(userId);
+        allow write: if false; // Server-only via Admin SDK (claimMission endpoint)
+      }
+    }
+
+    // Scam Radar Caching Collection
+    match /tokenScans/{contractAddress} {
+      allow read, write: if true; // Public cache
+    }
+  }
+}

@@ -82,19 +82,27 @@ if (FIREBASE_PROJECT_ID && FIREBASE_DATABASE_ID) {
       
       if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
         // Use environment variable for Vercel deployment
-        credential = admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY));
+        try {
+          credential = admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY));
+        } catch (parseError) {
+          console.error("Gagal mem-parsing FIREBASE_SERVICE_ACCOUNT_KEY (Bukan format JSON yang valid):", parseError);
+        }
       } else if (fs.existsSync(serviceAccountPath)) {
         // Fallback to local file
         credential = admin.credential.cert(JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8')));
-      } else {
+      } else if (!process.env.VERCEL) {
         // Fallback for Google Cloud Run (Application Default Credentials)
         credential = admin.credential.applicationDefault();
+      } else {
+        console.error("FIREBASE_SERVICE_ACCOUNT_KEY belum di-set di Vercel!");
       }
         
-      admin.initializeApp({
-        credential,
-        projectId: FIREBASE_PROJECT_ID,
-      });
+      if (credential) {
+        admin.initializeApp({
+          credential,
+          projectId: FIREBASE_PROJECT_ID,
+        });
+      }
     }
     adminDb = new admin.firestore.Firestore({
       projectId: FIREBASE_PROJECT_ID,

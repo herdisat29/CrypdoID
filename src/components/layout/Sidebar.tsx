@@ -106,8 +106,8 @@ export default function Sidebar({
   const { setShowLogoutConfirm, setShowLoginOverlay } = useUIStore();
   const { user } = useAuth();
   const archetypeId = useUserStore(state => state.archetype);
-  const isWalletConnected = useWalletStore(state => !!state.mockAddress || state.isRealConnected);
-  const activeWalletAddress = useWalletStore(state => state.mockAddress || state.realAddress);
+  const isWalletConnected = useWalletStore(state => state.isConnected);
+  const activeWalletAddress = useWalletStore(state => state.activeAddress);
 
   const menuItems = [
     { id: 'dashboard' as View, icon: <LayoutDashboard size={24} />, label: 'Dashboard' },

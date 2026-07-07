@@ -188,7 +188,8 @@ Kembalikan JSON:
 }`;
 
     try {
-      const response = await getGeminiResponse([], prompt);
+      const systemInstruction = "Kamu adalah backend parser AI. HANYA KEMBALIKAN OUTPUT DALAM FORMAT JSON VALID. Dilarang keras menambahkan teks, sapaan, atau komentar di luar JSON.";
+      const response = await getGeminiResponse([], prompt, systemInstruction);
       let parsed = null;
       let score = 65;
       try {
@@ -260,7 +261,8 @@ Kembalikan JSON:
   "greenFlags": [""],
   "takeaway": ""
 }`;
-      const response = await getGeminiResponse([], prompt);
+      const systemInstruction = "Kamu adalah backend parser AI. HANYA KEMBALIKAN OUTPUT DALAM FORMAT JSON VALID. Dilarang keras menambahkan teks, sapaan, atau komentar di luar JSON.";
+      const response = await getGeminiResponse([], prompt, systemInstruction);
       let parsed = null;
       let score = 65;
       try {

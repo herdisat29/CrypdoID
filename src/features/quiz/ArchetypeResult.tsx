@@ -381,7 +381,12 @@ interface Props {
 export function generateArchetypeURI(archetype: Archetype): string {
   const reframe = INVESTOR_REFRAME[archetype.id] || { quizName: archetype.name, tagline: archetype.title };
   const rarityConfig = RARITY_MAP[archetype.id] || RARITY_MAP.community_native;
-  const traits = useUserStore.getState().traits;
+  const rawTraits = useUserStore.getState().traits;
+
+  const allDefault = Object.values(rawTraits).every(v => v === 50);
+  const traits = allDefault && archetype.psychProfile
+    ? archetype.psychProfile
+    : rawTraits;
 
   const c = {
     c1: rarityConfig.color,
@@ -474,7 +479,12 @@ export function generateArchetypeURI(archetype: Archetype): string {
 // ─── MAIN COMPONENT ─────────────────────────────────────────────────────────
 
 export default function ArchetypeResult({ archetype, onRestart, onContinue }: Props) {
-  const traits = useUserStore(state => state.traits);
+  const rawTraits = useUserStore(state => state.traits);
+  
+  const allDefault = Object.values(rawTraits).every(v => v === 50);
+  const traits = allDefault && archetype.psychProfile
+    ? archetype.psychProfile
+    : rawTraits;
 
   const {
     mint,

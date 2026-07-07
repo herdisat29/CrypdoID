@@ -8,7 +8,8 @@ export interface ChatMessage {
 
 export const getGeminiResponse = async (
   history: ChatMessage[],
-  message: string
+  message: string,
+  systemInstruction?: string
 ): Promise<string> => {
   const response = await fetch('/api/gemini', {
     method: 'POST',
@@ -18,6 +19,7 @@ export const getGeminiResponse = async (
     body: JSON.stringify({
       history: history.map(h => ({ role: h.role, message: h.message })),
       message,
+      systemInstruction,
     }),
   });
 

@@ -143,8 +143,8 @@ export default function WalletLoginButton({ minimal = false }: WalletLoginButton
     }
   };
 
-  const activeAddress = mockAddress || address;
-  const activeIsConnected = !!mockAddress || isConnected;
+  const activeAddress = useWalletStore(state => state.activeAddress);
+  const activeIsConnected = useWalletStore(state => state.isConnected);
 
   if (activeIsConnected && activeAddress) {
     return (

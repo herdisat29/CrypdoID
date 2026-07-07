@@ -427,7 +427,7 @@ app.post('/api/gemini', async (req: Request, res: Response) => {
     return;
   }
 
-  const { history, message } = req.body as { history: Array<{ role: 'user' | 'model'; message: string }>; message: string };
+  const { history, message, systemInstruction } = req.body as { history: Array<{ role: 'user' | 'model'; message: string }>; message: string; systemInstruction?: string };
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -461,7 +461,7 @@ app.post('/api/gemini', async (req: Request, res: Response) => {
       model: "gemini-2.5-flash",
       contents,
       config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
+        systemInstruction: systemInstruction || SYSTEM_INSTRUCTION,
       }
     });
 
@@ -1077,9 +1077,13 @@ async function setupViteOrStaticAndListen() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`[CrypdoID] Server initialized and listening on http://0.0.0.0:${PORT}`);
-  });
+  if (!process.env.VERCEL) {
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`[CrypdoID] Server initialized and listening on http://0.0.0.0:${PORT}`);
+    });
+  }
 }
 
 setupViteOrStaticAndListen();
+
+export default app;

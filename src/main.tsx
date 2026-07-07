@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { WagmiProvider, createConfig, http } from 'wagmi';
+import { WagmiProvider, createConfig, http, fallback } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { mainnet, base } from 'viem/chains';
 import { injected, walletConnect } from 'wagmi/connectors';
@@ -29,7 +29,11 @@ const config = createConfig({
   ],
   transports: {
     [mainnet.id]: http('https://cloudflare-eth.com'),
-    [base.id]: http('https://mainnet.base.org'),
+    [base.id]: fallback([
+      http('https://base.drpc.org'),
+      http('https://base-rpc.publicnode.com'),
+      http('https://mainnet.base.org')
+    ]),
   },
 });
 

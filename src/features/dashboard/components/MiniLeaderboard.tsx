@@ -110,10 +110,10 @@ export default function MiniLeaderboard() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-1.5 relative z-10">
+      <div className="flex flex-col gap-1.5 relative z-10 min-h-[430px]">
         {isLoading ? (
-          <div className="flex justify-center items-center py-6">
-            <div className="w-8 h-8 border-4 border-vibrant-purple border-t-gold-accent rounded-full animate-spin"></div>
+          <div className="flex justify-center items-center py-6 h-full absolute inset-0">
+            <div className="w-8 h-8 border-4 border-vibrant-purple border-t-gold-accent rounded-full animate-spin m-auto"></div>
           </div>
         ) : currentLeaders.length > 0 ? (
           currentLeaders.map((user, idx) => {
@@ -122,7 +122,7 @@ export default function MiniLeaderboard() {
               <div
                 key={user.uid}
                 onMouseEnter={() => playSfx('hover')}
-                className={`flex items-center justify-between p-3 rounded-xl transition-all group border ${
+                className={`flex items-center justify-between p-3 h-[80px] rounded-xl transition-all group border ${
                   actualRank === 1 
                     ? 'bg-yellow-400/15 border-yellow-400/60 shadow-[0_0_20px_rgba(250,204,21,0.25)] hover:bg-yellow-400/25 hover:border-yellow-400/80'
                     : actualRank === 2

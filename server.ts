@@ -78,9 +78,18 @@ if (FIREBASE_PROJECT_ID && FIREBASE_DATABASE_ID) {
   try {
     if (!admin.apps || admin.apps.length === 0) {
       const serviceAccountPath = path.join(process.cwd(), 'serviceAccountKey.json');
-      const credential = fs.existsSync(serviceAccountPath) 
-        ? admin.credential.cert(JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'))) 
-        : admin.credential.applicationDefault();
+      let credential;
+      
+      if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+        // Use environment variable for Vercel deployment
+        credential = admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY));
+      } else if (fs.existsSync(serviceAccountPath)) {
+        // Fallback to local file
+        credential = admin.credential.cert(JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8')));
+      } else {
+        // Fallback for Google Cloud Run (Application Default Credentials)
+        credential = admin.credential.applicationDefault();
+      }
         
       admin.initializeApp({
         credential,

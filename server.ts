@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import fs from 'fs';
 import admin from 'firebase-admin';
+import { getFirestore } from 'firebase-admin/firestore';
 import { generateNonce, SiweMessage } from 'siwe';
 
 // Load local .env file if present
@@ -104,10 +105,7 @@ if (FIREBASE_PROJECT_ID && FIREBASE_DATABASE_ID) {
         });
       }
     }
-    adminDb = new admin.firestore.Firestore({
-      projectId: FIREBASE_PROJECT_ID,
-      databaseId: FIREBASE_DATABASE_ID,
-    });
+    adminDb = getFirestore(admin.app(), FIREBASE_DATABASE_ID);
     adminAuth = admin.auth();
     console.log("Firebase Admin successfully configured via ENV variables for database:", FIREBASE_DATABASE_ID);
   } catch (error) {

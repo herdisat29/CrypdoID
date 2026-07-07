@@ -71,8 +71,8 @@ app.use(express.json({ limit: '50kb' })); // Limit request body size
 let adminDb: admin.firestore.Firestore | null = null;
 let adminAuth: admin.auth.Auth | null = null;
 
-const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT;
-const FIREBASE_DATABASE_ID = process.env.FIREBASE_DATABASE_ID;
+const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT || process.env.VITE_FIREBASE_PROJECT_ID;
+const FIREBASE_DATABASE_ID = process.env.FIREBASE_DATABASE_ID || process.env.VITE_FIREBASE_DATABASE_ID;
 
 if (FIREBASE_PROJECT_ID && FIREBASE_DATABASE_ID) {
   try {
